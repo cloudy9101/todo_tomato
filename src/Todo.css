@@ -1,0 +1,8 @@
+.Todo {
+  margin: 5px 0 5px 0;
+  font-size: 18px;
+}
+
+.Todo-completed {
+  text-decoration: line-through;
+}
