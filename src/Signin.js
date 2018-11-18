@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import Api from './Api';
 
 class Signin extends Component {
@@ -21,22 +22,27 @@ class Signin extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    console.log(cookies);
     Api.signin(this.state, this.signin);
   }
 
   signin(data) {
-    console.log(data);
+    if (data.status === 200) {
+      this.setState({status: 200});
+    }
   }
 
   render() {
-    return(
-      <form onSubmit={this.handleSubmit}>
-        <input type="text" value={this.state.email} onChange={this.handleEmail} placeholder="Username" />
-        <input type="password" value={this.state.password} onChange={this.handlePassword} placeholder="Password" />
-        <input type="submit" value="Submit" />
-      </form>
-    )
+    if (this.state.status === 200) {
+      return (<Redirect to="/" />);
+    } else {
+      return(
+        <form onSubmit={this.handleSubmit}>
+          <input type="text" value={this.state.email} onChange={this.handleEmail} placeholder="Username" />
+          <input type="password" value={this.state.password} onChange={this.handlePassword} placeholder="Password" />
+          <input type="submit" value="Submit" />
+        </form>
+      );
+    }
   }
 }
 

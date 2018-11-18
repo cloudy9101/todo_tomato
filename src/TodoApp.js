@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect, Link } from 'react-router-dom';
 import './TodoApp.css';
 import TodoForm from './TodoForm';
 import Todolist from './Todolist';
@@ -8,7 +9,6 @@ class TodoApp extends Component {
   constructor(props) {
     super(props);
 
-    //  this.state = {"todos": [{"key": 0, "name": "test1", "completed": false, "active": true}, {"key": 1, "name": "test2", "completed": false, "active": true}]}
     this.state = {
       todos: [],
       uncompletedTodos: [],
@@ -23,12 +23,16 @@ class TodoApp extends Component {
 
   componentWillMount() {
     Api.fetchTodos((data) => {
-      let todos = data.map((todo) => {
-        return { "key": todo.id, "name": todo.name, "completed": todo.completed, "active": !todo.deleted };
-      });
-      this.setState({todos: todos});
-      this.specifyTodos();
-    })
+      if (data.status === 403) {
+        this.setState({status: 403});
+      } else {
+        let todos = data.map((todo) => {
+          return { "key": todo.id, "name": todo.name, "completed": todo.completed, "active": !todo.deleted };
+        });
+        this.setState({todos: todos, status: 200});
+        this.specifyTodos();
+      }
+    });
   }
 
   specifyTodos() {
@@ -120,17 +124,22 @@ class TodoApp extends Component {
   }
 
   render() {
-    return(
-      <div className="TodoApp">
-        <TodoForm appendTodo={this.appendTodo} />
-        <h3>Active Uncompleted</h3>
-        <Todolist todos={this.state.uncompletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
-        <h3>Active Completed</h3>
-        <Todolist todos={this.state.completedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
-        <h3>Deleted</h3>
-        <Todolist todos={this.state.deletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
-      </div>
-    );
+    if (this.state.status === 403) {
+      return(<Redirect to="/signin" />);
+    } else {
+      return(
+        <div className="TodoApp">
+          <TodoForm appendTodo={this.appendTodo} />
+          <h3>Active Uncompleted</h3>
+          <Todolist todos={this.state.uncompletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
+          <h3>Active Completed</h3>
+          <Todolist todos={this.state.completedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
+          <h3>Deleted</h3>
+          <Todolist todos={this.state.deletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
+          <Link to="/logout">Logout</Link>
+        </div>
+      );
+    }
   }
 }
 

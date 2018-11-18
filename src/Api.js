@@ -1,13 +1,18 @@
-const gateway = 'http://localhost:4000';
+const gateway = '/api';
 
 const Api = {
   fetchTodos: (cb) => {
-    fetch(gateway + '/todos')
-      .then(results => {
+    fetch(gateway + '/todos', {
+      credentials: 'include'
+    }).then(results => {
+      if (results.ok) {
         return results.json();
-      }).then(data => {
-        cb(data);
-      });
+      } else if (results.status === 403) {
+        return { status: 403 };
+      }
+    }).then(data => {
+      cb(data);
+    });
   },
   createTodo: (name, cb) => {
     fetch(gateway + '/todos', {
@@ -80,9 +85,14 @@ const Api = {
         'content-type': 'application/json'
       }
     }).then(results => {
-      return results.json();
-    }).then(data => {
-      cb(data);
+      cb(results);
+    });
+  },
+  logout: (cb) => {
+    fetch(gateway + '/logout', {
+      method: 'DELETE',
+    }).then(results => {
+      cb(results);
     });
   }
 };
