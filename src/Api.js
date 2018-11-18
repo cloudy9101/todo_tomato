@@ -69,6 +69,21 @@ const Api = {
     }).then(data => {
       cb(data);
     });
+  },
+  signin: (data, cb) => {
+    let email = data.email;
+    let password = data.password;
+    fetch(gateway + '/signin', {
+      body: JSON.stringify({email: email, password: password}),
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then(results => {
+      return results.json();
+    }).then(data => {
+      cb(data);
+    });
   }
 };
 
