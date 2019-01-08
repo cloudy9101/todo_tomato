@@ -19,6 +19,8 @@ class TodoApp extends Component {
     this.toggleTodoCompleted = this.toggleTodoCompleted.bind(this);
     this.appendTodo = this.appendTodo.bind(this);
     this.deleteTodo = this.deleteTodo.bind(this);
+    this.startTomato = this.startTomato.bind(this);
+    this.finishTomato = this.finishTomato.bind(this);
   }
 
   componentWillMount() {
@@ -27,7 +29,7 @@ class TodoApp extends Component {
         this.setState({status: 403});
       } else {
         let todos = data.map((todo) => {
-          return { "key": todo.id, "name": todo.name, "completed": todo.completed, "active": !todo.deleted };
+          return { "key": todo.id, "name": todo.name, "completed": todo.completed, "active": !todo.deleted, "tomatos": todo.tomatos };
         });
         this.setState({todos: todos, status: 200});
         this.specifyTodos();
@@ -123,6 +125,34 @@ class TodoApp extends Component {
     }
   }
 
+  startTomato(key) {
+    // alert('start ' + key);
+    if (this.state.intervalId != null) {
+      clearInterval(this.state.intervalId);
+    }
+    this.setState({currentTodoKey: null, intervalId: null, startAt: null});
+    const date = new Date();
+    const startAt = date.getTime();
+    let intervalId = setInterval(() => {
+      let duration = Math.round(((new Date()).getTime() - startAt) / 1000);
+      this.setState({duration: duration});
+    }, 1000);
+    this.setState({currentTodoKey: key, intervalId: intervalId, startAt: startAt});
+  }
+
+  finishTomato(key) {
+    clearInterval(this.state.intervalId);
+    let endAt = (new Date()).getTime();
+    Api.finishTomato(key, this.state.startAt, endAt, (data) => {
+      let todos = this.state.todos.map((todo) => {
+        if(todo.key === key) { todo.tomatos = data.tomatos; }
+        return todo;
+      });
+      this.setState({currentTodoKey: null, intervalId: null, startAt: null, todos: todos});
+      this.specifyTodos();
+    });
+  }
+
   render() {
     if (this.state.status === 403) {
       return(<Redirect to="/signin" />);
@@ -131,11 +161,11 @@ class TodoApp extends Component {
         <div className="TodoApp">
           <TodoForm appendTodo={this.appendTodo} />
           <h3>Active Uncompleted</h3>
-          <Todolist todos={this.state.uncompletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
+          <Todolist todos={this.state.uncompletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
           <h3>Active Completed</h3>
-          <Todolist todos={this.state.completedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
+          <Todolist todos={this.state.completedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
           <h3>Deleted</h3>
-          <Todolist todos={this.state.deletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} />
+          <Todolist todos={this.state.deletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
           <Link to="/logout">Logout</Link>
         </div>
       );

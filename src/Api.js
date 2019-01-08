@@ -94,6 +94,19 @@ const Api = {
     }).then(results => {
       cb(results);
     });
+  },
+  finishTomato: (id, start_at, end_at, cb) => {
+    fetch(gateway + '/todos/' + id + '/tomatos', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({start_at: start_at, end_at: end_at})
+    }).then(results => {
+      return results.json();
+    }).then(data => {
+      cb(data);
+    });
   }
 };
 
