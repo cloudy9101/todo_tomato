@@ -1,4 +1,4 @@
-.TodoApp {
+.Trash {
   margin-left: auto;
   margin-right: auto;
   padding: 20px 5% 0 5%;
@@ -10,26 +10,25 @@
 
 .todolist {
   margin-top: 20px;
-  min-height: 150px;
 }
 
-.TodoApp .links {
+.Trash .links {
   margin-top: 10px;
   text-align: center;
 }
 
-.TodoApp .links a {
+.Trash .links a {
   color: #5c76e4;
   text-decoration: none;
 }
 
-.TodoApp .links a:hover {
+.Trash .links a:hover {
   color: #9daae6;
   text-decoration: none;
 }
 
 @media (min-width: 1200px) {
-  .TodoApp.container {
+  .Trash.container {
     max-width: 960px;
   }
 }

@@ -21,8 +21,12 @@ class TodoForm extends Component {
   render() {
     return(
       <form onSubmit={this.handleSubmit}>
-        <input type="text" value={this.state.value} onChange={this.handleChange} />
-        <input type="submit" value="Submit" />
+        <div className="input-group mb-3">
+          <input type="text" value={this.state.value} onChange={this.handleChange} className="form-control" placeholder="Task title" aria-label="Task title" aria-describedby="basic-addon1" />
+          <div className="input-group-append" id="button-addon4">
+            <button className="btn btn-outline-secondary" type="button">Add</button>
+          </div>
+        </div>
       </form>
     );
   }

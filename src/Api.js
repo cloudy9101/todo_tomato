@@ -88,6 +88,24 @@ const Api = {
       cb(results);
     });
   },
+  signup: (data, cb) => {
+    let email = data.email;
+    let password = data.password;
+    let passwordConfirmation = data.passwordConfirmation;
+    fetch(gateway + '/signup', {
+      body: JSON.stringify({
+        email: email,
+        password: password,
+        password_confirmation: passwordConfirmation
+      }),
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then(results => {
+      cb(results);
+    });
+  },
   logout: (cb) => {
     fetch(gateway + '/logout', {
       method: 'DELETE',

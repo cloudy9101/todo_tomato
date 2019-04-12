@@ -13,13 +13,13 @@ class TodoApp extends Component {
       todos: [],
       uncompletedTodos: [],
       completedTodos: [],
-      deletedTodos: []
     };
 
     this.toggleTodoCompleted = this.toggleTodoCompleted.bind(this);
     this.appendTodo = this.appendTodo.bind(this);
     this.deleteTodo = this.deleteTodo.bind(this);
     this.startTomato = this.startTomato.bind(this);
+    this.dropTomato = this.dropTomato.bind(this);
     this.finishTomato = this.finishTomato.bind(this);
   }
 
@@ -44,13 +44,9 @@ class TodoApp extends Component {
     let completedTodos = this.state.todos.filter((todo) =>
       todo.active === true && todo.completed === true
     );
-    let deletedTodos = this.state.todos.filter((todo) =>
-      todo.active === false
-    );
     this.setState({
       uncompletedTodos: uncompletedTodos,
       completedTodos: completedTodos,
-      deletedTodos: deletedTodos
     });
   }
 
@@ -87,7 +83,7 @@ class TodoApp extends Component {
     Api.createTodo(name, (data) => {
       if(data.errors === undefined) {
         let todos = this.state.todos;
-        todos.push({"key": data.id, "name": data.name, "completed": data.completed, "active": !data.deleted});
+        todos.push({"key": data.id, "name": data.name, "completed": data.completed, "active": !data.deleted, "tomatos": 0});
         this.setState({"todos": todos});
         this.specifyTodos();
       } else {
@@ -140,6 +136,13 @@ class TodoApp extends Component {
     this.setState({currentTodoKey: key, intervalId: intervalId, startAt: startAt});
   }
 
+  dropTomato(key) {
+    if (this.state.intervalId != null) {
+      clearInterval(this.state.intervalId);
+    }
+    this.setState({currentTodoKey: null, intervalId: null, startAt: null});
+  }
+
   finishTomato(key) {
     clearInterval(this.state.intervalId);
     let endAt = (new Date()).getTime();
@@ -158,15 +161,24 @@ class TodoApp extends Component {
       return(<Redirect to="/signin" />);
     } else {
       return(
-        <div className="TodoApp">
+        <div className="TodoApp container">
           <TodoForm appendTodo={this.appendTodo} />
-          <h3>Active Uncompleted</h3>
-          <Todolist todos={this.state.uncompletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
-          <h3>Active Completed</h3>
-          <Todolist todos={this.state.completedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
-          <h3>Deleted</h3>
-          <Todolist todos={this.state.deletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
-          <Link to="/logout">Logout</Link>
+          <div className="todolist uncompleted-todos">
+            <Todolist todos={this.state.uncompletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} dropTomato={this.dropTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
+          </div>
+          <div className="todolist completed-todos">
+            <Todolist todos={this.state.completedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} dropTomato={this.dropTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
+          </div>
+          <div className="row links">
+            <div className="col-md-2">
+              <Link to="/trash">Trash</Link>
+            </div>
+            <div className="col-md-8">
+            </div>
+            <div className="col-md-2">
+              <Link to="/logout">Logout</Link>
+            </div>
+          </div>
         </div>
       );
     }

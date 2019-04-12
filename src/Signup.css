@@ -1,0 +1,45 @@
+.Signup {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px 5% 0 5%;
+  max-width: 991.98px;
+  min-height: 100vh;
+  background-color: white;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.main {
+  max-width: 440px;
+  margin: 10px auto 0 auto;
+}
+
+.title-image {
+  width: 440px;
+  height: 200px;
+  background-image: url(./assets/title-image.webp);
+  margin-bottom: 20px;
+}
+
+.main .form-control {
+  margin-top: 5px;
+}
+
+.Signup .buttons {
+  margin-top: 20px;
+}
+
+.signin-link {
+  margin-top: 10px;
+  font-size: 0.8em;
+}
+
+.signin-link a {
+  color: #79797e;
+  text-decoration: none;
+}
+
+.signin-link a:hover {
+  color: #5c76e4;
+  text-decoration: none;
+}

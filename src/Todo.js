@@ -9,6 +9,7 @@ class Todo extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleStart = this.handleStart.bind(this);
     this.handleFinish = this.handleFinish.bind(this);
+    this.handleDrop = this.handleDrop.bind(this);
     this.state = { duration: null, intervalId: null };
   }
 
@@ -24,6 +25,10 @@ class Todo extends Component {
     this.props.startTomato(key);
   }
 
+  handleDrop(key, e) {
+    this.props.dropTomato(key);
+  }
+
   notifyStop(key) {
     alert('stop');
   }
@@ -36,6 +41,7 @@ class Todo extends Component {
     const todo = this.props.todo;
     let buttons = null;
     let duration = null;
+    let completedBtn = null;
     if (this.props.currentTodoKey === todo.key) {
       duration = this.props.duration;
     }
@@ -43,32 +49,58 @@ class Todo extends Component {
       if (duration != null) {
         if (duration < this.interval) {
           buttons = <span>
-            {" | "}{duration}
-            {" | "}<a onClick={this.handleDelete.bind(this, todo.key)}>{todo.active ? "del" : "recover"}</a>
+            <span className="duration">
+              {duration}
+            </span>
+            <a onClick={this.handleDrop.bind(this, todo.key)}><i className="fas fa-times"></i></a>
+            <a onClick={this.handleDelete.bind(this, todo.key)}><i className="fas fa-trash-alt"></i></a>
             </span>
         } else {
           buttons = <span>
-            {" | "}{duration}{" "}<a onClick={this.handleFinish.bind(this, todo.key)}>finish</a>
-            {" | "}<a onClick={this.handleDelete.bind(this, todo.key)}>{todo.active ? "del" : "recover"}</a>
+            <span className="duration">
+              {duration}
+            </span>
+            <a onClick={this.handleFinish.bind(this, todo.key)}><i className="fas fa-check"></i></a>
+            <a onClick={this.handleDelete.bind(this, todo.key)}><i className="fas fa-trash-alt"></i></a>
             </span>
         }
       } else {
-        buttons = <span>
-          {" | "}<span onClick={this.handleStart.bind(this, todo.key)}>start</span>
-          {" | "}<a onClick={this.handleDelete.bind(this, todo.key)}>{todo.active ? "del" : "recover"}</a>
-          </span>
+        if (todo.completed) {
+          buttons = <span>
+              <a onClick={this.handleDelete.bind(this, todo.key)}><i className="fas fa-trash-alt"></i></a>
+            </span>
+        } else {
+          buttons = <span>
+              <a onClick={this.handleStart.bind(this, todo.key)}><i className="fas fa-play"></i></a>
+              <a onClick={this.handleDelete.bind(this, todo.key)}><i className="fas fa-trash-alt"></i></a>
+            </span>
+        }
       }
     } else {
       buttons = <span>
-        {" | "}<a onClick={this.handleDelete.bind(this, todo.key)}>{todo.active ? "del" : "recover"}</a>
+        <a onClick={this.handleDelete.bind(this, todo.key)}><i className="fas fa-undo-alt"></i></a>
         </span>
     }
+    if (todo.completed) {
+      completedBtn = <i className="complete-icon fas fa-check"></i>
+    } else {
+      completedBtn = <i className="complete-icon far fa-circle"></i>
+    }
     return(
-      <div>
-        <span className={"Todo Todo-" + (todo.completed ? "completed" : "uncompleted") } onClick={this.handleClick.bind(this, todo.key)}>{todo.name}</span>
-        {buttons}
-        {" | "}
-        {todo.tomatos}
+      <div className={"todo-group Todo-" + (todo.completed ? "completed" : "uncompleted") + " Todo-" + (todo.active ? "active" : "inactive")}>
+        <a onClick={this.handleClick.bind(this, todo.key)}>
+          {completedBtn}
+        </a>
+        <div className="todo-item">
+          <span className="Todo">{todo.name}</span>
+          <div className="buttons">
+            {buttons}
+            <span className="tomatos">
+              <i className="fa fa-lemon"></i>
+              {todo.tomatos}
+            </span>
+          </div>
+        </div>
       </div>);
   }
 }

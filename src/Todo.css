@@ -1,8 +1,60 @@
-.Todo {
+.todo-group {
   margin: 5px 0 5px 0;
-  font-size: 18px;
+  display: flex;
 }
 
-.Todo-completed {
-  text-decoration: line-through;
+.Todo-completed, .Todo-inactive {
+  color: #d0d0d1;
+}
+
+.todo-group i {
+  margin-right: 12px;
+  padding-top: 2px;
+}
+
+.complete-icon {
+  font-size: 1.2em;
+}
+
+.todo-item {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  color: #79797e;
+}
+
+.todo-item:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 24px;
+    display: block;
+    width: 100%;
+    border: 0.5px solid #d0d0d1;
+}
+
+.Todo-completed .todo-item, .Todo-inactive .todo-item {
+  color: #d0d0d1;
+  position: relative;
+}
+
+.Todo-completed .todo-item:after,  .Todo-inactive .todo-item:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    display: block;
+    width: 100%;
+    border: 0.5px solid #d0d0d1;
+}
+
+.buttons .duration {
+  margin-right: 10px;
+}
+
+.tomatos i {
+  padding-top: 5px;
+  margin-right: 2px;
+  font-size: 1em;
 }
