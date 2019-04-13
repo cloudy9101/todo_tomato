@@ -16,6 +16,10 @@
   font-size: 1.2em;
 }
 
+.complete-icon.completed {
+  color: #5c76e4;
+}
+
 .todo-item {
   flex-grow: 1;
   display: flex;

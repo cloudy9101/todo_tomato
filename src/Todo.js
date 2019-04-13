@@ -82,7 +82,7 @@ class Todo extends Component {
         </span>
     }
     if (todo.completed) {
-      completedBtn = <i className="complete-icon fas fa-check"></i>
+      completedBtn = <i className="complete-icon completed fas fa-check"></i>
     } else {
       completedBtn = <i className="complete-icon far fa-circle"></i>
     }
