@@ -3,6 +3,6 @@ if @todo.errors.any?
 else
   json.id @todo.id
   json.name @todo.name
-  json.completed @todo.completed_at.present?
-  json.deleted @todo.deleted_at.present?
+  json.completed_at @todo.completed_at
+  json.deleted_at @todo.deleted_at
 end

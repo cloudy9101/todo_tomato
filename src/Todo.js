@@ -45,7 +45,7 @@ class Todo extends Component {
     if (this.props.currentTodoKey === todo.key) {
       duration = this.props.duration;
     }
-    if (todo.active) {
+    if (todo.deletedAt != null) {
       if (duration != null) {
         if (duration < this.interval) {
           buttons = <span>
@@ -65,7 +65,7 @@ class Todo extends Component {
             </span>
         }
       } else {
-        if (todo.completed) {
+        if (todo.completedAt != null) {
           buttons = <span>
               <a onClick={this.handleDelete.bind(this, todo.key)}><i className="fas fa-trash-alt"></i></a>
             </span>
@@ -81,13 +81,13 @@ class Todo extends Component {
         <a onClick={this.handleDelete.bind(this, todo.key)}><i className="fas fa-undo-alt"></i></a>
         </span>
     }
-    if (todo.completed) {
+    if (todo.completedAt != null) {
       completedBtn = <i className="complete-icon completed fas fa-check"></i>
     } else {
       completedBtn = <i className="complete-icon far fa-circle"></i>
     }
     return(
-      <div className={"todo-group Todo-" + (todo.completed ? "completed" : "uncompleted") + " Todo-" + (todo.active ? "active" : "inactive")}>
+      <div className={"todo-group Todo-" + (todo.completedAt != null ? "completed" : "uncompleted") + " Todo-" + (todo.deletedAt != null ? "inactive" : "active")}>
         <a onClick={this.handleClick.bind(this, todo.key)}>
           {completedBtn}
         </a>

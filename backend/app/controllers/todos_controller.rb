@@ -2,7 +2,7 @@ class TodosController < ApplicationController
   before_action :is_signin
 
   def index
-    @todos = current_user.todos
+    @todos = current_user.todos.active
   end
 
   def create

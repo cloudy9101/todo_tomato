@@ -15,6 +15,10 @@ class TodoApp extends Component {
       completedTodos: [],
     };
 
+    this.activeTodos = this.activeTodos.bind(this);
+    this.completedTodos = this.completedTodos.bind(this);
+    this.uncompletedTodos = this.uncompletedTodos.bind(this);
+
     this.toggleTodoCompleted = this.toggleTodoCompleted.bind(this);
     this.appendTodo = this.appendTodo.bind(this);
     this.deleteTodo = this.deleteTodo.bind(this);
@@ -29,51 +33,58 @@ class TodoApp extends Component {
         this.setState({status: 403});
       } else {
         let todos = data.map((todo) => {
-          return { "key": todo.id, "name": todo.name, "completed": todo.completed, "active": !todo.deleted, "tomatos": todo.tomatos };
+          return this.buildTodoData(todo);
         });
         this.setState({todos: todos, status: 200});
-        this.specifyTodos();
       }
     });
   }
 
-  specifyTodos() {
-    let uncompletedTodos = this.state.todos.filter((todo) =>
-      todo.active === true && todo.completed === false
+  buildTodoData(todo) {
+    return { "key": todo.id, "name": todo.name, "completedAt": todo.completed_at,
+             "deletedAt": todo.deleted_at, "tomatos": todo.tomatos };
+  }
+
+  activeTodos() {
+    return this.state.todos.filter((todo) =>
+      todo.deletedAt === null
     );
-    let completedTodos = this.state.todos.filter((todo) =>
-      todo.active === true && todo.completed === true
+  }
+
+  uncompletedTodos() {
+    return this.activeTodos().filter((todo) =>
+      todo.completedAt === null
     );
-    this.setState({
-      uncompletedTodos: uncompletedTodos,
-      completedTodos: completedTodos,
-    });
+  }
+
+  completedTodos() {
+    return this.activeTodos().filter((todo) =>
+      todo.completedAt != null
+    );
   }
 
   toggleTodoCompleted(key) {
     let todo = this.state.todos.find((todo) => {
       return todo.key === key;
     });
-    if(todo.completed) {
+    if(todo.completedAt != null) {
       Api.uncompleteTodo(key, (data) => {
         if(data.errors === undefined) {
           let todos = this.state.todos.map((todo) => {
-            if(todo.key === key) { todo.completed = false; }
+            if(todo.key === key) { todo.completedAt = null; }
             return todo;
           });
           this.setState({"todo": todos});
-          this.specifyTodos();
         }
       });
     } else {
       Api.completeTodo(key, (data) => {
         if(data.errors === undefined) {
           let todos = this.state.todos.map((todo) => {
-            if(todo.key === key) { todo.completed = true; }
+            if(todo.key === key) { todo.completedAt = Date.now(); }
             return todo;
           });
           this.setState({"todo": todos});
-          this.specifyTodos();
         }
       });
     }
@@ -83,9 +94,8 @@ class TodoApp extends Component {
     Api.createTodo(name, (data) => {
       if(data.errors === undefined) {
         let todos = this.state.todos;
-        todos.push({"key": data.id, "name": data.name, "completed": data.completed, "active": !data.deleted, "tomatos": 0});
+        todos.push(this.buildTodoData(data));
         this.setState({"todos": todos});
-        this.specifyTodos();
       } else {
         console.log(data.errors);
       }
@@ -100,29 +110,26 @@ class TodoApp extends Component {
       Api.destroyTodo(todo.key, (data) => {
         if(data.errors === undefined) {
           let todos = this.state.todos.map((todo) => {
-            if(todo.key === key) { todo.active = false; }
+            if(todo.key === key) { todo.deletedAt = Date.now(); }
             return todo;
           });
           this.setState({"todo": todos});
-          this.specifyTodos();
         }
       });
     } else {
       Api.recoverTodo(todo.key, (data) => {
         if(data.errors === undefined) {
           let todos = this.state.todos.map((todo) => {
-            if(todo.key === key) { todo.active = true; }
+            if(todo.key === key) { todo.deletedAt = null; }
             return todo;
           });
           this.setState({"todo": todos});
-          this.specifyTodos();
         }
       });
     }
   }
 
   startTomato(key) {
-    // alert('start ' + key);
     if (this.state.intervalId != null) {
       clearInterval(this.state.intervalId);
     }
@@ -152,7 +159,6 @@ class TodoApp extends Component {
         return todo;
       });
       this.setState({currentTodoKey: null, intervalId: null, startAt: null, todos: todos});
-      this.specifyTodos();
     });
   }
 
@@ -164,10 +170,10 @@ class TodoApp extends Component {
         <div className="TodoApp container">
           <TodoForm appendTodo={this.appendTodo} />
           <div className="todolist uncompleted-todos">
-            <Todolist todos={this.state.uncompletedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} dropTomato={this.dropTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
+            <Todolist todos={this.uncompletedTodos()} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} dropTomato={this.dropTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
           </div>
           <div className="todolist completed-todos">
-            <Todolist todos={this.state.completedTodos} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} dropTomato={this.dropTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
+            <Todolist todos={this.completedTodos()} toggleTodoCompleted={this.toggleTodoCompleted} deleteTodo={this.deleteTodo} startTomato={this.startTomato} dropTomato={this.dropTomato} finishTomato={this.finishTomato} currentTodoKey={this.state.currentTodoKey} duration={this.state.duration} />
           </div>
           <div className="row links">
             <div className="col-md-2">
