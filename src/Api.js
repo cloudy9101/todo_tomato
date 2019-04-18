@@ -1,7 +1,7 @@
 const gateway = '/api';
 
 const Api = {
-  fetchTodos: (cb) => {
+  fetchTodos: (cb, err) => {
     fetch(gateway + '/todos', {
       credentials: 'include'
     }).then(results => {
@@ -11,7 +11,11 @@ const Api = {
         return { status: 403 };
       }
     }).then(data => {
-      cb(data);
+      if(data.status === 403) {
+        err(data);
+      } else {
+        cb(data);
+      }
     });
   },
   createTodo: (name, cb) => {

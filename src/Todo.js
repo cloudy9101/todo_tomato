@@ -1,20 +1,24 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { completeTodo, uncompleteTodo, deleteTodo, startTomato, dropTomato, finishTomato } from './actions';
 import './Todo.css';
 
 class Todo extends Component {
   constructor(props) {
     super(props);
-    this.interval = 25 * 60;
     this.handleClick = this.handleClick.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleStart = this.handleStart.bind(this);
     this.handleFinish = this.handleFinish.bind(this);
     this.handleDrop = this.handleDrop.bind(this);
-    this.state = { duration: null, intervalId: null };
   }
 
   handleClick(key, e) {
-    this.props.toggleTodoCompleted(key);
+    if (this.props.todo.completedAt === null) {
+      this.props.completeTodo(key);
+    } else {
+      this.props.uncompleteTodo(key);
+    }
   }
 
   handleDelete(key, e) {
@@ -25,16 +29,14 @@ class Todo extends Component {
     this.props.startTomato(key);
   }
 
-  handleDrop(key, e) {
-    this.props.dropTomato(key);
-  }
-
-  notifyStop(key) {
-    alert('stop');
+  handleDrop(e) {
+    clearInterval(this.props.tomatoStatus.intervalId);
+    this.props.dropTomato();
   }
 
   handleFinish(key, e) {
-    this.props.finishTomato(key);
+    clearInterval(this.props.tomatoStatus.intervalId);
+    this.props.finishTomato(key, this.props.tomatoStatus.tomatoStartAt);
   }
 
   render() {
@@ -42,17 +44,17 @@ class Todo extends Component {
     let buttons = null;
     let duration = null;
     let completedBtn = null;
-    if (this.props.currentTodoKey === todo.key) {
-      duration = this.props.duration;
+    if (this.props.tomatoStatus.tomatoTodoKey === todo.key) {
+      duration = this.props.tomatoStatus.tomatoDuration;
     }
-    if (todo.deletedAt != null) {
+    if (todo.deletedAt === null) {
       if (duration != null) {
-        if (duration < this.interval) {
+        if (duration < this.props.tomatoStatus.timeLength) {
           buttons = <span>
             <span className="duration">
-              {duration}
+              {Math.round(duration / 60)}" {duration % 60}'
             </span>
-            <a onClick={this.handleDrop.bind(this, todo.key)}><i className="fas fa-times"></i></a>
+            <a onClick={this.handleDrop.bind(this)}><i className="fas fa-times"></i></a>
             <a onClick={this.handleDelete.bind(this, todo.key)}><i className="fas fa-trash-alt"></i></a>
             </span>
         } else {
@@ -105,4 +107,7 @@ class Todo extends Component {
   }
 }
 
-export default Todo;
+const mapStateToProps = (state) => ({ todos: state.todos, tomatoStatus: state.tomatoStatus });
+const mapDispatchToProps = { completeTodo, uncompleteTodo, deleteTodo, startTomato, dropTomato, finishTomato };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Todo);

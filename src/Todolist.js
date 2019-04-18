@@ -3,10 +3,12 @@ import Todo from './Todo';
 
 class Todolist extends Component {
   render() {
-    const todos = this.props.todos;
-    const todoItems = todos.map((todo) =>
-      <Todo key={todo.key} todo={todo} toggleTodoCompleted={this.props.toggleTodoCompleted} deleteTodo={this.props.deleteTodo} startTomato={this.props.startTomato} dropTomato={this.props.dropTomato} finishTomato={this.props.finishTomato} currentTodoKey={this.props.currentTodoKey} duration={this.props.duration} />
-    );
+    let todoItems = [];
+    console.log(this.props);
+    for (let key in this.props.todos) {
+      let todo = this.props.todos[key];
+      todoItems.push(<Todo key={todo.key} todo={todo} />);
+    }
     return(<div className="Todolist">{todoItems}</div>);
   }
 }
