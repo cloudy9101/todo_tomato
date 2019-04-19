@@ -117,13 +117,13 @@ function reducer(state = initialState, action) {
     case actions.DROP_TOMATO:
       return Object.assign(
         {}, state,
-        { tomatoStatus:
+        { tomatoStatus: Object.assign({}, state.tomatoStatus,
           {
             tomatoTodoKey: null,
             tomatoStartAt: null,
             tomatoDuration: null,
             intervalId: null
-          }
+          })
         }
       );
     case actions.FINISH_TOMATO_SUCCESS:

@@ -20,6 +20,10 @@
   color: #5c76e4;
 }
 
+.todo-wrapper {
+  width: 100%;
+}
+
 .todo-item {
   flex-grow: 1;
   display: flex;
