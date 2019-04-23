@@ -14,8 +14,8 @@ function Todo(props) {
 
   const clearDuration = getClearDuration(setDuration, intervalId, setIntervalId);
   const startTomatoBtn = <a onClick={() => startTomato(setDuration, setIntervalId, setStartAt)}><i className="fas fa-play"></i></a>;
-  const dropTomatoBtn =  <a onClick={() => clearDuration()}><i className="fas fa-times"></i></a>;
-  const finishTomatoBtn =  <a onClick={() => finishTomato(todo.key, startAt, setTomatos, clearDuration)}><i className="fas fa-check"></i></a>;
+  const dropTomatoBtn = <a onClick={() => clearDuration()}><i className="fas fa-times"></i></a>;
+  const finishTomatoBtn = <a onClick={() => finishTomato(todo.key, startAt, setTomatos, clearDuration)}><i className="fas fa-check"></i></a>;
   let tomatoBtns = null;
   if(active.value && !complete.value && intervalId && duration > 10) {
     tomatoBtns = finishTomatoBtn;
@@ -56,7 +56,7 @@ function completeBtn(complete) {
   const completedBtn = <i className="complete-icon completed fas fa-check"></i>;
   const uncompletedBtn = <i className="complete-icon far fa-circle"></i>;
   return(<a onClick={complete.onChange}>
-           {complete.value ? uncompletedBtn : completedBtn}
+           {complete.value ? completedBtn : uncompletedBtn}
          </a>)
 }
 
