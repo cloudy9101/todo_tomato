@@ -18,6 +18,24 @@ const Api = {
       }
     });
   },
+  fetchDeletedTodos: (cb, err) => {
+    fetch(gateway + '/todos?active=false', {
+      credentials: 'include'
+    }).then(results => {
+      console.log(results);
+      if (results.ok) {
+        return results.json();
+      } else if (results.status === 403) {
+        return { status: 403 };
+      }
+    }).then(data => {
+      if(data.status === 403) {
+        err(data);
+      } else {
+        cb(data);
+      }
+    });
+  },
   createTodo: (name, cb) => {
     fetch(gateway + '/todos', {
       body: JSON.stringify({name: name}),
