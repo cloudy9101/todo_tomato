@@ -1,39 +1,35 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { appendTodo } from './actions';
+import React, { useState } from 'react';
+import Api from './Api';
 
-class TodoForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { "value": "" }
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+function TodoForm(props) {
+  const [value, setValue] = useState("");
+
+  function handleChange(e) {
+    setValue(e.target.value);
   }
 
-  handleChange(e) {
-    this.setState({"value": e.target.value});
-  }
-
-  handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    this.props.appendTodo(this.state.value);
-    this.setState({"value": ""})
+    Api.createTodo(value, (data) => {
+      if(data.errors === undefined) {
+        props.appendTodo(data);
+        setValue("");
+      } else {
+        console.log(data.errors);
+      }
+    });
   }
 
-  render() {
-    return(
-      <form onSubmit={this.handleSubmit}>
-        <div className="input-group mb-3">
-          <input type="text" value={this.state.value} onChange={this.handleChange} className="form-control" placeholder="Task title" aria-label="Task title" aria-describedby="basic-addon1" />
-          <div className="input-group-append" id="button-addon4">
-            <button className="btn btn-outline-secondary" type="button">Add</button>
-          </div>
+  return(
+    <form onSubmit={handleSubmit}>
+      <div className="input-group mb-3">
+        <input type="text" value={value} onChange={handleChange} className="form-control" placeholder="Task title" aria-label="Task title" aria-describedby="basic-addon1" />
+        <div className="input-group-append" id="button-addon4">
+          <button className="btn btn-outline-secondary" type="button">Add</button>
         </div>
-      </form>
-    );
-  }
+      </div>
+    </form>
+  );
 }
 
-const mapDispatchToProps = { appendTodo };
-
-export default connect(null, mapDispatchToProps)(TodoForm);
+export default TodoForm;

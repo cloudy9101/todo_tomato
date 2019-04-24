@@ -1,85 +1,53 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import './Trash.css';
-import Todolist from './Todolist';
+import Todolist from './TodoList';
 import Api from './Api';
 
-class Trash extends Component {
-  constructor(props) {
-    super(props);
+function Trash(props) {
+  const [todos, setTodos] = useState({});
+  const [isSignin, setIsSignin] = useState(true);
 
-    this.state = {
-      todos: [],
-    };
-
-    this.deleteTodo = this.deleteTodo.bind(this);
-  }
-
-  componentWillMount() {
-    Api.fetchTodos((data) => {
+  useEffect(() => {
+    Api.fetchDeletedTodos((data) => {
       if (data.status === 403) {
-        this.setState({status: 403});
+        setIsSignin(false);
       } else {
-        let todos = data.filter((todo) =>
-          todo.deleted
-        ).map((todo) => {
-          return { "key": todo.id, "name": todo.name, "completed": todo.completed, "active": !todo.deleted, "tomatos": todo.tomatos };
+        console.log(data);
+        const tmp = data.map(buildTodoData).filter((todo) => {
+          return todo.deletedAt != null;
         });
-        this.setState({todos: todos, status: 200});
+        setTodos(tmp);
       }
     });
-  }
+  }, [])
 
-  deleteTodo(key) {
-    let todo = this.state.todos.find((todo) => {
-      return todo.key === key;
-    });
-    if(todo.active) {
-      Api.destroyTodo(todo.key, (data) => {
-        if(data.errors === undefined) {
-          let todos = this.state.todos.map((todo) => {
-            if(todo.key === key) { todo.active = false; }
-            return todo;
-          });
-          this.setState({"todo": todos});
-        }
-      });
-    } else {
-      Api.recoverTodo(todo.key, (data) => {
-        if(data.errors === undefined) {
-          let todos = this.state.todos.map((todo) => {
-            if(todo.key === key) { todo.active = true; }
-            return todo;
-          });
-          this.setState({"todo": todos});
-        }
-      });
-    }
-  }
-
-  render() {
-    if (this.state.status === 403) {
-      return(<Redirect to="/signin" />);
-    } else {
-      return(
-        <div className="Trash container">
-          <div className="todolist deleted-todos">
-            <Todolist todos={this.state.todos} deleteTodo={this.deleteTodo} />
+  if (isSignin) {
+    return(
+      <div className="Trash container">
+        <div className="todolist deleted-todos">
+          <Todolist todos={todos} />
+        </div>
+        <div className="row links">
+          <div className="col-md-2">
+            <Link to="/">Index</Link>
           </div>
-          <div className="row links">
-            <div className="col-md-2">
-              <Link to="/">Index</Link>
-            </div>
-            <div className="col-md-8">
-            </div>
-            <div className="col-md-2">
-              <Link to="/logout">Logout</Link>
-            </div>
+          <div className="col-md-8">
+          </div>
+          <div className="col-md-2">
+            <Link to="/logout">Logout</Link>
           </div>
         </div>
-      );
-    }
+      </div>
+    );
+  } else {
+    return(<Redirect to="/signin" />);
   }
 }
+
+function buildTodoData(todo) {
+  return { "key": todo.id, "name": todo.name, "completedAt": todo.completed_at,
+           "deletedAt": todo.deleted_at, "tomatos": todo.tomatos || 0 };
+};
 
 export default Trash;

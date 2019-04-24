@@ -1,58 +1,85 @@
-import React, { Component } from 'react';
-import { Redirect, Link, withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
-import './TodoApp.css';
-import TodoForm from './TodoFormHook';
-import Todolist from './TodoListHook';
+import React, { useState, useEffect } from 'react';
+import { Redirect, Link } from 'react-router-dom';
+import TodoForm from './TodoForm';
+import Todolist from './TodoList';
 import Api from './Api';
+import './TodoApp.css';
 
-import { fetchTodos } from './actions';
+function TodoApp(props) {
+  const [isSignin, setIsSignin] = useState(true);
+  const [todos, setTodos] = useState({});
 
-class TodoApp extends Component {
-  constructor(props) {
-    super(props);
+  useEffect(() => {
+    Api.fetchTodos((data) => {
+      let tmp = {};
+      data.reduce((todos, todoData) => {
+        let todo = buildTodoData(todoData);
+        todos[todo.key] = todo;
+        return todos;
+      }, tmp);
+      setTodos(tmp);
+    }, (data) => {
+      console.log(data);
+      setIsSignin(false);
+    });
+  }, []);
+
+  let uncompletedTodos = {};
+  let completedTodos = {};
+  for (let key in todos) {
+    let todo = todos[key];
+    if(todo.deletedAt === null) {
+      if(todo.completedAt === null) {
+        uncompletedTodos[key] = todo;
+      } else {
+        completedTodos[key] = todo;
+      }
+    }
   }
 
-  componentWillMount() {
-    this.props.fetchTodos();
-  }
-
-  render() {
-    if (this.props.status === 403) {
-      return(<Redirect to="/signin" />);
-    } else {
-      return(
-        <div className="TodoApp container">
-          <TodoForm />
-          <div className="todolist uncompleted-todos">
-            <Todolist todos={this.props.uncompletedTodos} />
+  if (isSignin) {
+    return(
+      <div className="TodoApp container">
+        <TodoForm appendTodo={appendTodoHandler(todos, setTodos)} />
+        <div className="todolist uncompleted-todos">
+          <Todolist todos={uncompletedTodos} />
+        </div>
+        <div className="todolist completed-todos">
+          <Todolist todos={completedTodos} />
+        </div>
+        <div className="row links">
+          <div className="col-md-2">
+            <Link to="/trash">Trash</Link>
           </div>
-          <div className="todolist completed-todos">
-            <Todolist todos={this.props.completedTodos} />
+          <div className="col-md-8">
           </div>
-          <div className="row links">
-            <div className="col-md-2">
-              <Link to="/trash">Trash</Link>
-            </div>
-            <div className="col-md-8">
-            </div>
-            <div className="col-md-2">
-              <Link to="/logout">Logout</Link>
-            </div>
+          <div className="col-md-2">
+            <Link to="/logout">Logout</Link>
           </div>
         </div>
-      );
-    }
+      </div>
+    );
+  } else {
+    return(<Redirect to="/signin" />);
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    completedTodos: state.completedTodos,
-    uncompletedTodos: state.uncompletedTodos,
-    status: null
+function appendTodoHandler(todos, setTodos) {
+  return (todoData) => {
+    const todo = buildTodoData(todoData);
+    setTodos(
+      Object.assign(
+        {},
+        todos,
+        {[todo.key]: todo}
+      )
+    );
   }
-};
-const mapDispatchToProps = { fetchTodos };
+}
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TodoApp));
+function buildTodoData(todo) {
+  return { "key": todo.id, "name": todo.name, "completedAt": todo.completed_at,
+           "deletedAt": todo.deleted_at, "tomatos": todo.tomatos || 0 };
+};
+
+export default TodoApp;

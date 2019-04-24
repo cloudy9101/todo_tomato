@@ -2,11 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import logo from './logo.svg';
 import './App.css';
-import TodoApp from './TodoAppHook';
-import Signin from './SigninHook';
-import Signup from './SignupHook';
-import Trash from './TrashHook';
-import Logout from './LogoutHook';
+import TodoApp from './TodoApp';
+import Signin from './Signin';
+import Signup from './Signup';
+import Trash from './Trash';
+import Logout from './Logout';
 
 function App(props) {
   return(
