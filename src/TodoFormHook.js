@@ -12,6 +12,7 @@ function TodoForm(props) {
     e.preventDefault();
     Api.createTodo(value, (data) => {
       if(data.errors === undefined) {
+        props.appendTodo(data);
         setValue("");
       } else {
         console.log(data.errors);

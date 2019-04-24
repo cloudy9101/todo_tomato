@@ -5,7 +5,7 @@ function Todolist(props) {
   let todoItems = [];
   for (let key in props.todos) {
     let todo = props.todos[key];
-    todoItems.push(<Todo key={todo.key} todo={todo} />);
+    todoItems.push(<Todo key={key} todo={todo} />);
   }
 
   return(
