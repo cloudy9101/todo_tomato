@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import './Signup.css';
 import Api from './Api';
+import { authenticate, isAuthenticated } from './authenticate';
 
 function Signup(props) {
   const email = useInput('');
@@ -15,32 +16,30 @@ function Signup(props) {
       email: email.value,
       password: password.value,
       passwordConfirmation: passwordConfirmation.value
-    }, () => { setIsSignin(true) });
+    }, () => {  authenticate(); setIsSignin(true); });
   }
 
-  if (isSignin) {
-    return (<Redirect to="/" />);
-  } else {
-    return(
-      <div className="Signup container">
-        <div className="main">
-          <div className="title-image">
-          </div>
-          <form onSubmit={handleSubmit}>
-            <input className="form-control" type="text" {...email} placeholder="Email" />
-            <input className="form-control" type="password" {...password} placeholder="Password" />
-            <input className="form-control" type="password" {...passwordConfirmation} placeholder="Password Confirmation" />
-            <div className="btn-group buttons" role="group" aria-label="Basic example">
-              <input className="btn btn-outline-primary" type="submit" value="Sign up" />
-            </div>
-            <div className="signin-link">
-              <Link to="/signin">Already has account? Sign in.</Link>
-            </div>
-          </form>
+  if (isSignin && isAuthenticated()) { return (<Redirect to="/" />); }
+
+  return(
+    <div className="Signup container">
+      <div className="main">
+        <div className="title-image">
         </div>
+        <form onSubmit={handleSubmit}>
+          <input className="form-control" type="text" {...email} placeholder="Email" />
+          <input className="form-control" type="password" {...password} placeholder="Password" />
+          <input className="form-control" type="password" {...passwordConfirmation} placeholder="Password Confirmation" />
+          <div className="btn-group buttons" role="group" aria-label="Basic example">
+            <input className="btn btn-outline-primary" type="submit" value="Sign up" />
+          </div>
+          <div className="signin-link">
+            <Link to="/signin">Already has account? Sign in.</Link>
+          </div>
+        </form>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 function useInput(initial) {

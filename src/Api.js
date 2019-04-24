@@ -1,3 +1,5 @@
+import { unauthenticate } from './authenticate';
+
 const gateway = '/api';
 
 const Api = {
@@ -13,6 +15,7 @@ const Api = {
     }).then(data => {
       if(data.status === 403) {
         err(data);
+        unauthenticate();
       } else {
         cb(data);
       }
@@ -31,6 +34,7 @@ const Api = {
     }).then(data => {
       if(data.status === 403) {
         err(data);
+        unauthenticate();
       } else {
         cb(data);
       }
@@ -107,7 +111,7 @@ const Api = {
         'content-type': 'application/json'
       }
     }).then(results => {
-      cb(results);
+      cb();
     });
   },
   signup: (data, cb) => {
