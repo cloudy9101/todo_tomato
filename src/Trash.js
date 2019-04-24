@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import './Trash.css';
-import Todolist from './TodoList';
+import Todo from './Todo';
 import Api from './Api';
 
 function Trash(props) {
@@ -22,12 +22,15 @@ function Trash(props) {
     });
   }, [])
 
+  let todoItems = [];
+  for (let key in todos) {
+    todoItems.push(<Todo key={key} todo={todos[key]} />);
+  }
+
   if (isSignin) {
     return(
       <div className="Trash container">
-        <div className="todolist deleted-todos">
-          <Todolist todos={todos} />
-        </div>
+        <div className="todolist deleted-todos">{todoItems}</div>
         <div className="row links">
           <div className="col-md-2">
             <Link to="/">Index</Link>

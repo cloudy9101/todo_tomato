@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import TodoForm from './TodoForm';
-import Todolist from './TodoList';
+import Todo from './Todo';
 import Api from './Api';
 import './TodoApp.css';
 
@@ -24,16 +24,14 @@ function TodoApp(props) {
     });
   }, []);
 
-  let uncompletedTodos = {};
-  let completedTodos = {};
+  let uncompletedTodoItems = [];
+  let completedTodoItems = [];
   for (let key in todos) {
     let todo = todos[key];
-    if(todo.deletedAt === null) {
-      if(todo.completedAt === null) {
-        uncompletedTodos[key] = todo;
-      } else {
-        completedTodos[key] = todo;
-      }
+    if(todo.completedAt === null) {
+      uncompletedTodoItems.push(<Todo key={todo.key} todo={todo} />);
+    } else {
+      completedTodoItems.push(<Todo key={todo.key} todo={todo} />);
     }
   }
 
@@ -41,12 +39,8 @@ function TodoApp(props) {
     return(
       <div className="TodoApp container">
         <TodoForm appendTodo={appendTodoHandler(todos, setTodos)} />
-        <div className="todolist uncompleted-todos">
-          <Todolist todos={uncompletedTodos} />
-        </div>
-        <div className="todolist completed-todos">
-          <Todolist todos={completedTodos} />
-        </div>
+        <div className="todolist uncompleted-todos">{uncompletedTodoItems}</div>
+        <div className="todolist completed-todos">{completedTodoItems}</div>
         <div className="row links">
           <div className="col-md-2">
             <Link to="/trash">Trash</Link>
