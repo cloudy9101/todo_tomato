@@ -3,10 +3,10 @@ import { Redirect, Link } from 'react-router-dom';
 import TodoForm from './TodoForm';
 import Todo from './Todo';
 import Api from './Api';
+import { unauthenticate } from './authenticate';
 import './TodoApp.css';
 
 function TodoApp(props) {
-  const [isSignin, setIsSignin] = useState(true);
   const [todos, setTodos] = useState({});
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function TodoApp(props) {
       setTodos(tmp);
     }, (data) => {
       console.log(data);
-      setIsSignin(false);
+      unauthenticate();
     });
   }, []);
 
@@ -35,27 +35,23 @@ function TodoApp(props) {
     }
   }
 
-  if (isSignin) {
-    return(
-      <div className="TodoApp container">
-        <TodoForm appendTodo={appendTodoHandler(todos, setTodos)} />
-        <div className="todolist uncompleted-todos">{uncompletedTodoItems}</div>
-        <div className="todolist completed-todos">{completedTodoItems}</div>
-        <div className="row links">
-          <div className="col-md-2">
-            <Link to="/trash">Trash</Link>
-          </div>
-          <div className="col-md-8">
-          </div>
-          <div className="col-md-2">
-            <Link to="/logout">Logout</Link>
-          </div>
+  return(
+    <div className="TodoApp container">
+      <TodoForm appendTodo={appendTodoHandler(todos, setTodos)} />
+      <div className="todolist uncompleted-todos">{uncompletedTodoItems}</div>
+      <div className="todolist completed-todos">{completedTodoItems}</div>
+      <div className="row links">
+        <div className="col-md-2">
+          <Link to="/trash">Trash</Link>
+        </div>
+        <div className="col-md-8">
+        </div>
+        <div className="col-md-2">
+          <Link to="/logout">Logout</Link>
         </div>
       </div>
-    );
-  } else {
-    return(<Redirect to="/signin" />);
-  }
+    </div>
+  );
 }
 
 function appendTodoHandler(todos, setTodos) {

@@ -14,10 +14,10 @@ function App(props) {
     <Router>
       <div>
         <AuthenticatedRoute exact path='/' component={TodoApp}/>
+        <AuthenticatedRoute exact path='/trash' component={Trash}/>
+        <AuthenticatedRoute exact path='/logout' component={Logout}/>
         <Route exact path='/signin' component={Signin}/>
         <Route exact path='/signup' component={Signup}/>
-        <AuthenticatedRoute exact path='/trash' component={Trash}/>
-        <Route exact path='/logout' component={Logout}/>
       </div>
     </Router>
   )

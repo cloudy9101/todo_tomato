@@ -3,15 +3,15 @@ import { Redirect, Link } from 'react-router-dom';
 import './Trash.css';
 import Todo from './Todo';
 import Api from './Api';
+import { unauthenticate } from './authenticate';
 
 function Trash(props) {
   const [todos, setTodos] = useState({});
-  const [isSignin, setIsSignin] = useState(true);
 
   useEffect(() => {
     Api.fetchDeletedTodos((data) => {
       if (data.status === 403) {
-        setIsSignin(false);
+        unauthenticate();
       } else {
         console.log(data);
         const tmp = data.map(buildTodoData).filter((todo) => {
@@ -27,25 +27,21 @@ function Trash(props) {
     todoItems.push(<Todo key={key} todo={todos[key]} />);
   }
 
-  if (isSignin) {
-    return(
-      <div className="Trash container">
-        <div className="todolist deleted-todos">{todoItems}</div>
-        <div className="row links">
-          <div className="col-md-2">
-            <Link to="/">Index</Link>
-          </div>
-          <div className="col-md-8">
-          </div>
-          <div className="col-md-2">
-            <Link to="/logout">Logout</Link>
-          </div>
+  return(
+    <div className="Trash container">
+      <div className="todolist deleted-todos">{todoItems}</div>
+      <div className="row links">
+        <div className="col-md-2">
+          <Link to="/">Index</Link>
+        </div>
+        <div className="col-md-8">
+        </div>
+        <div className="col-md-2">
+          <Link to="/logout">Logout</Link>
         </div>
       </div>
-    );
-  } else {
-    return(<Redirect to="/signin" />);
-  }
+    </div>
+  );
 }
 
 function buildTodoData(todo) {
